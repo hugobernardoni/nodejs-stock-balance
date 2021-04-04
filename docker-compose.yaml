@@ -1,0 +1,36 @@
+version: "3"
+
+services:
+  app:
+    build: . #caminho do dockerfile
+    command: npm start
+    ports:
+      - ${PORT}:${PORT}
+    volumes:
+      - .:/www/var
+    depends_on:
+      - DB_POSTGRES 
+    environment:
+      DB_PORT: ${DB_PORT}
+      APP_PORT: ${PORT}
+    networks: 
+      - production-network  
+
+  DB_POSTGRES:    
+    image: postgres:alpine
+    restart: unless-stopped    
+    environment: 
+      POSTGRES_DB: ${DB_DATABASE}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "${DB_PORT}:${DB_PORT}"
+    networks: 
+      - production-network
+    command: -p ${DB_PORT}
+
+networks: 
+    production-network:
+        driver: bridge
+
+        
